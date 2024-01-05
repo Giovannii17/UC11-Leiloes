@@ -38,7 +38,7 @@ public class ProdutosDAO {
         // Executando a query para inserir o produto no banco de dados
         prep.executeUpdate();
 
-        JOptionPane.showMessageDialog(null, "Produto cadastrado com sucesso!");
+        JOptionPane.showMessageDialog(null, "Produto Cadastrado com Sucesso!");
 
     } catch (Exception e) {
         e.printStackTrace();
@@ -61,7 +61,42 @@ public class ProdutosDAO {
     }
     
     public ArrayList<ProdutosDTO> listarProdutos(){
-        
+        conn = new conectaDAO().connectDB();
+        ArrayList<ProdutosDTO> listagem = new ArrayList<>();
+
+        try {
+            String query = "SELECT * FROM produtos";
+            prep = conn.prepareStatement(query);
+            resultset = prep.executeQuery();
+
+            while (resultset.next()) {
+                ProdutosDTO produto = new ProdutosDTO();
+                produto.setId(resultset.getInt("id"));
+                produto.setNome(resultset.getString("nome"));
+                produto.setValor(resultset.getInt("valor"));
+                produto.setStatus(resultset.getString("status"));
+
+                listagem.add(produto);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (resultset != null) {
+                    resultset.close();
+                }
+                if (prep != null) {
+                    prep.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         return listagem;
     }
     
