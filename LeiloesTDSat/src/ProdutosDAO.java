@@ -99,7 +99,84 @@ public class ProdutosDAO {
 
         return listagem;
     }
-    
+      public void venderProduto(int idProduto) {
+        conn = new conectaDAO().connectDB();
+
+        try {
+            // Preparando a query SQL para atualizar o status do produto para "Vendido"
+            String query = "UPDATE produtos SET status = 'Vendido' WHERE id = ?";
+            prep = conn.prepareStatement(query);
+
+            // Configurando o parâmetro da query com o ID do produto
+            prep.setInt(1, idProduto);
+
+            // Executando a query para atualizar o status do produto
+            int rowsAffected = prep.executeUpdate();
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(null, "Produto vendido com sucesso!");
+            } else {
+                JOptionPane.showMessageDialog(null, "Nenhum produto encontrado com o ID fornecido.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Erro ao vender produto.");
+        } finally {
+            // Fechando recursos
+            try {
+                if (prep != null) {
+                    prep.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+public ArrayList<ProdutosDTO> listarProdutosVendidos() {
+    conn = new conectaDAO().connectDB();
+    ArrayList<ProdutosDTO> produtosVendidos = new ArrayList<>();
+
+    try {
+        String query = "SELECT * FROM produtos WHERE status = 'Vendido'";
+        prep = conn.prepareStatement(query);
+        resultset = prep.executeQuery();
+
+        while (resultset.next()) {
+            ProdutosDTO produto = new ProdutosDTO();
+            produto.setId(resultset.getInt("id"));
+            produto.setNome(resultset.getString("nome"));
+            produto.setValor(resultset.getInt("valor"));
+            produto.setStatus(resultset.getString("status"));
+
+            produtosVendidos.add(produto);
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        try {
+            if (resultset != null) {
+                resultset.close();
+            }
+            if (prep != null) {
+                prep.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    return produtosVendidos;
+}
+ 
     
     
         
